@@ -69,6 +69,16 @@ function M.setup(config)
 		end,
 	})
 
+	-- Add telescope command if telescope is available
+	local has_telescope = pcall(require, 'telescope')
+	if has_telescope then
+		vim.api.nvim_create_user_command("TelescopeColorset", function()
+			require('telescope').extensions.colorset.colorsets()
+		end, {
+			desc = "Select colorset with Telescope"
+		})
+	end
+
 	-- 起動時に初期カラーセットを登録する
 	local default_colorset = config.default
 	if default_colorset then
