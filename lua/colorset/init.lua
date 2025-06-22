@@ -1,7 +1,7 @@
 -- Pure Neovim implementation without rc.lib dependencies
 
-require('colorset.types')
-local highlights = require('colorset.highlights')
+require("colorset.types")
+local highlights = require("colorset.highlights")
 
 ---@type table<string, ColorsetConfig>
 local colorsets = {}
@@ -38,7 +38,7 @@ end
 ---@param config SetupConfig|string? Configuration table or colorset name for backward compatibility
 function M.setup(config)
 	config = config or {}
-	
+
 	-- Backward compatibility: if config is a string, treat it as default colorset
 	if type(config) == "string" then
 		config = { default = config }
@@ -70,12 +70,12 @@ function M.setup(config)
 	})
 
 	-- Add telescope command if telescope is available
-	local has_telescope = pcall(require, 'telescope')
+	local has_telescope = pcall(require, "telescope")
 	if has_telescope then
 		vim.api.nvim_create_user_command("TelescopeColorset", function()
-			require('telescope').extensions.colorset.colorsets()
+			require("telescope").extensions.colorset.colorsets()
 		end, {
-			desc = "Select colorset with Telescope"
+			desc = "Select colorset with Telescope",
 		})
 	end
 
