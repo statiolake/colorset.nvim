@@ -7,5 +7,6 @@
 ---@class SetupConfig
 ---@field colorsets? table<string, ColorsetConfig> Table of colorset definitions
 ---@field default? string Default colorset name to apply on startup
+---@field hooks? fun()[] List of hook functions to execute after colorscheme changes
 
 return {}

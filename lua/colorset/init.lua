@@ -1,7 +1,6 @@
 -- Pure Neovim implementation without rc.lib dependencies
 
 require("colorset.types")
-local highlights = require("colorset.highlights")
 
 ---@type table<string, ColorsetConfig>
 local colorsets = {}
@@ -15,7 +14,7 @@ local function set_colorscheme(scheme)
 	vim.api.nvim_exec_autocmds("ColorScheme", { pattern = scheme })
 end
 
-local hooks = highlights.get_default_hooks()
+local hooks = {}
 
 local function run_editor_colorscheme_hooks()
 	for _, hook in ipairs(hooks) do
@@ -44,6 +43,11 @@ function M.setup(config)
 		config = { default = config }
 	end
 
+	-- Set hooks if provided
+	if config.hooks then
+		hooks = config.hooks
+	end
+
 	-- Register colorsets from config
 	if config.colorsets then
 		for name, colorset_def in pairs(config.colorsets) do
@@ -51,7 +55,7 @@ function M.setup(config)
 		end
 	end
 
-	-- 起動したままカラーセットを切り替えるために :Colorset コマンドを追加する
+	-- Add :Colorset command to switch colorsets without restarting
 	vim.api.nvim_create_user_command("Colorset", function(opts)
 		if #opts.args > 0 then
 			M.apply(opts.args)
@@ -79,7 +83,7 @@ function M.setup(config)
 		})
 	end
 
-	-- 起動時に初期カラーセットを登録する
+	-- Register initial colorset on startup
 	local default_colorset = config.default
 	if default_colorset then
 		vim.api.nvim_create_autocmd("UIEnter", {
@@ -117,30 +121,44 @@ end
 ---@param name? string
 ---@return ColorsetConfig?
 function M.get(name)
-	return name and vim.deepcopy(colorsets[name]) or vim.deepcopy(active_colorset)
+	if name then
+		-- If name is specified, return a copy of the specified colorset
+		return vim.deepcopy(colorsets[name])
+	end
+
+	if active_colorset then
+		-- If no name is specified, return a copy of the active
+		-- colorset
+		return vim.deepcopy(active_colorset)
+	end
+
+	-- If no active colorset, return nil
+	return nil
 end
 
 ---Apply specified colorset
 ---@param name string
 function M.apply(name)
-	active_colorset = colorsets[name]
-	if active_colorset == nil then
+	local colorset = colorsets[name]
+	if colorset == nil then
 		vim.notify(string.format("unknown colorset: %s", name), vim.log.levels.ERROR)
 		return
 	end
 
-	local background = active_colorset.background
+	active_colorset = colorset
+
+	local background = colorset.background
 	if background then
 		vim.opt.background = background
 	end
 
-	local editor = active_colorset.editor
+	local editor = colorset.editor
 	if editor then
 		set_colorscheme(editor)
 		run_editor_colorscheme_hooks()
 	end
 
-	local hook = active_colorset.hook or function() end
+	local hook = colorset.hook or function() end
 	hook()
 end
 
