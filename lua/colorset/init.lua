@@ -2,6 +2,8 @@
 
 require("colorset.types")
 
+local already_applied = false
+
 ---@type table<string, ColorsetConfig>
 local colorsets = {}
 ---@type ColorsetConfig?
@@ -136,7 +138,6 @@ function M.get(name)
 	return nil
 end
 
-local already_applied = false
 ---Apply specified colorset
 ---@param name string
 function M.apply(name)
