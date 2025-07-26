@@ -86,12 +86,7 @@ function M.setup(config)
 	-- Register initial colorset on startup
 	local default_colorset = config.default
 	if default_colorset then
-		vim.api.nvim_create_autocmd("UIEnter", {
-			callback = function()
-				M.apply(default_colorset)
-			end,
-			once = true,
-		})
+		M.apply(default_colorset)
 	end
 end
 
