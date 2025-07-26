@@ -104,6 +104,11 @@ end
 ---@param hook fun()
 function M.register_editor_colorscheme_hook(hook)
 	table.insert(hooks, hook)
+	if already_applied then
+		-- If colorset has already been applied, run the hook
+		-- immediately
+		hook()
+	end
 end
 
 ---Get all colorset specifications
@@ -131,6 +136,7 @@ function M.get(name)
 	return nil
 end
 
+local already_applied = false
 ---Apply specified colorset
 ---@param name string
 function M.apply(name)
@@ -155,6 +161,7 @@ function M.apply(name)
 
 	local hook = colorset.hook or function() end
 	hook()
+	already_applied = true
 end
 
 return M
